@@ -237,8 +237,8 @@ func handle(clConn net.Conn) {
 			fmt.Println(e)
 			return
 		}
-		defer tgtConn.Close()
 	}
+	defer tgtConn.Close()
 
 	// fwd the client hello that we intercepted
 	tgtConn.Write(hello)
