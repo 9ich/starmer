@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"cmp"
 	bin "encoding/binary"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -246,12 +247,12 @@ func handle(clConn net.Conn) {
 	// fwd clConn->tgtConn, and tgtConn->clConn
 	go func() {
 		n, e := clConn.(*net.TCPConn).WriteTo(tgtConn)
-		if e != nil && e != io.EOF && e != net.ErrClosed {
+		if e != nil && !errors.Is(e, io.EOF) && !errors.Is(e, net.ErrClosed) {
 			fmt.Printf("tgt->cl %v %v\n", n, e)
 		}
 	}()
 	n, e := tgtConn.(*net.TCPConn).WriteTo(clConn)
-	if e != nil && e != io.EOF && e != net.ErrClosed {
+	if e != nil && !errors.Is(e, io.EOF) && !errors.Is(e, net.ErrClosed) {
 		fmt.Printf("tgt->cl %v %v\n", n, e)
 	}
 }
@@ -262,7 +263,7 @@ func write(w io.Writer, x any) error     { return bin.Write(w, enc, x) }
 func ip2str(ip [4]byte) string           { return net.IP(ip[:]).String() }
 
 func ioerr(e error) {
-	if e != nil && e != io.EOF && e != net.ErrClosed {
+	if e != nil && !errors.Is(e, io.EOF) && !errors.Is(e, net.ErrClosed) {
 		fmt.Println(e)
 	}
 }
