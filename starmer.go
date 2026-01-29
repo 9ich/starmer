@@ -239,7 +239,10 @@ func handle(clConn net.Conn) {
 			return
 		}
 	}
-	defer tgtConn.Close()
+	defer func(){
+		tgtConn.Close()
+		fmt.Printf("    close   %s\n", dialAddr)
+	}()
 
 	// fwd the client hello that we intercepted
 	tgtConn.Write(hello)
